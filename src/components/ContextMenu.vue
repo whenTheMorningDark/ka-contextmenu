@@ -1,14 +1,16 @@
 <template>
-  <Teleport to="body" v-if="visible">
+  <Teleport to="body">
     <div class="contextMenu-wrapper" :class="{ 'is-fixed': fixed }">
-      <div class="contextMenu" ref="contextmenuRef" :style="style" :class="[popperClass]">
-        <slot />
-      </div>
+      <transition name="fade">
+        <div class="contextMenu" ref="contextmenuRef" :style="style" :class="[popperClass]" v-if="visible">
+          <slot />
+        </div>
+      </transition>
     </div>
   </Teleport>
 </template>
 <script setup lang="ts">
-import { ref, computed, nextTick, watch, onMounted } from "vue"
+import { ref, computed, nextTick, watch, onMounted, provide } from "vue"
 const contextmenuRef = ref<HTMLDivElement | null>(null)
 import useClickOutside from "./UseClickOutSide"
 
@@ -26,7 +28,7 @@ const visible = ref(false)
 const fixed = ref(false)
 
 const defaultSyleOverFlow = ref()
-
+const emit = defineEmits(["hide"])
 const position = ref({
   top: 0,
   left: 0
@@ -47,7 +49,11 @@ watch(
     }
   }
 )
-
+const hide = () => {
+  visible.value = false
+  emit("hide", visible.value)
+}
+provide("hide", hide)
 // 计算x,y的偏移值
 const calculatePosition = (axis: "X" | "Y", mousePos: number, elSize: number) => {
   const windowSize = axis === "X" ? window.innerWidth : window.innerHeight
@@ -63,7 +69,7 @@ const calculatePosition = (axis: "X" | "Y", mousePos: number, elSize: number) =>
 useClickOutside(
   contextmenuRef,
   () => {
-    visible.value = false
+    hide()
     fixed.value = false
   },
   { ignore: props.ignore }
@@ -83,8 +89,8 @@ const show = async (e: MouseEvent) => {
   const { pageX: x, pageY: y } = e
   position.value.top = calculatePosition("Y", y, height)
   position.value.left = calculatePosition("X", x, width)
-  console.log(position.value, "w")
 }
+
 onMounted(async () => {
   if (props.isFixed) {
     await nextTick()
@@ -94,7 +100,8 @@ onMounted(async () => {
   }
 })
 defineExpose({
-  show
+  show,
+  hide
 })
 </script>
 <style lang="scss" scoped>
@@ -123,5 +130,13 @@ defineExpose({
   line-height: 20px;
   min-width: 10px;
   word-wrap: break-word;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

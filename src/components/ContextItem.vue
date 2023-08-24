@@ -11,16 +11,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue"
+import { computed, ref, inject } from "vue"
 interface Props {
   disabled?: boolean
+  hideOnClick?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
-  disabled: false
+  disabled: false,
+  hideOnClick: true
 })
 const emit = defineEmits(["mouseenter", "click", "mouseleave"])
 const isHover = ref(false)
-
+const menuHide = inject<() => void>("hide")
 const itemClass = computed(() => {
   return {
     "is-disabled": props.disabled,
@@ -33,6 +35,7 @@ const handleClick = (e: MouseEvent) => {
     return
   }
   emit("click", e)
+  props.hideOnClick && menuHide?.()
 }
 
 const handleMouseenter = (e: MouseEvent) => {

@@ -1,7 +1,9 @@
 <template>
   <Teleport to="body" v-if="visible">
     <div class="contextMenu-wrapper" :class="{ 'is-fixed': fixed }">
-      <div class="contextMenu" ref="contextmenuRef" :style="style" :class="[popperClass]">1234</div>
+      <div class="contextMenu" ref="contextmenuRef" :style="style" :class="[popperClass]">
+        <slot />
+      </div>
     </div>
   </Teleport>
 </template>
@@ -99,6 +101,7 @@ defineExpose({
 .contextMenu-wrapper {
   z-index: 9999;
   background-color: transparent;
+
   &.is-fixed {
     position: fixed;
     left: 0;
@@ -110,10 +113,15 @@ defineExpose({
 
 .contextMenu {
   position: absolute;
-  width: 152px;
-  padding-top: 5px;
-  padding-bottom: 8px;
-  background-color: #fff;
+  top: 0;
+  left: 0;
+  padding: 5px 0;
+  margin: 0;
+  background-color: #ffffff;
   border-radius: 4px;
+  font-size: 12px;
+  line-height: 20px;
+  min-width: 10px;
+  word-wrap: break-word;
 }
 </style>

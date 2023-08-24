@@ -1,10 +1,6 @@
 <template>
   <Teleport to="body" v-if="visible">
-    <div
-      class="contextMenu-wrapper"
-      :class="{ 'is-fixed': fixed }"
-      :style="{ width: width + 'px', height: height + 'px' }"
-    >
+    <div class="contextMenu-wrapper" :class="{ 'is-fixed': fixed }">
       <div class="contextMenu" ref="contextmenuRef" :style="style" :class="[popperClass]">1234</div>
     </div>
   </Teleport>
@@ -13,9 +9,7 @@
 import { ref, computed, nextTick, watch, onMounted } from "vue"
 const contextmenuRef = ref<HTMLDivElement | null>(null)
 import useClickOutside from "./UseClickOutSide"
-import { useWindowSize } from "@vueuse/core"
 
-const { width, height } = useWindowSize()
 interface Props {
   ignore: string[]
   popperClass?: string
@@ -44,7 +38,6 @@ const style = computed(() => {
 watch(
   () => fixed.value,
   () => {
-    console.log(defaultSyleOverFlow.value, "www")
     if (fixed.value) {
       document.body.style.overflow = "hidden"
     } else {
@@ -68,7 +61,6 @@ const calculatePosition = (axis: "X" | "Y", mousePos: number, elSize: number) =>
 useClickOutside(
   contextmenuRef,
   () => {
-    console.log("w")
     visible.value = false
     fixed.value = false
   },
@@ -111,6 +103,8 @@ defineExpose({
     position: fixed;
     left: 0;
     top: 0;
+    width: 100%;
+    height: 100%;
   }
 }
 

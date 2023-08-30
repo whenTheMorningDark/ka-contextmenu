@@ -5,13 +5,16 @@
     @click="handleClick"
     @mouseenter="handleMouseenter"
     @mouseleave="handleMouseleave"
+    ref="contextItemRef"
   >
     <slot />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, inject } from "vue"
+import { computed, ref, inject, onMounted } from "vue"
+const contextItemRef = ref()
+const currentClass = ref()
 interface Props {
   disabled?: boolean
   hideOnClick?: boolean
@@ -26,7 +29,12 @@ const menuHide = inject<() => void>("hide")
 const itemClass = computed(() => {
   return {
     "is-disabled": props.disabled,
-    "is-hover": isHover.value
+    "is-hover": isHover.value,
+    "is-active": currentClass.value
+      ? Array.from(currentClass.value)
+        ? Array.from(currentClass.value).includes("is-active")
+        : false
+      : false
   }
 })
 
@@ -40,6 +48,7 @@ const handleClick = (e: MouseEvent) => {
 
 const handleMouseenter = (e: MouseEvent) => {
   if (props.disabled) return
+  currentClass.value = contextItemRef.value.classList
   isHover.value = true
   emit("mouseenter", e)
 }
@@ -47,9 +56,9 @@ const handleMouseenter = (e: MouseEvent) => {
 const handleMouseleave = (e: MouseEvent) => {
   if (props.disabled) return
   isHover.value = false
-  console.log("handleMouseleave")
   emit("mouseleave", e)
 }
+onMounted(() => {})
 </script>
 
 <style lang="scss">
@@ -71,6 +80,11 @@ const handleMouseleave = (e: MouseEvent) => {
   }
   &.is-disabled {
     cursor: not-allowed;
+    color: #a8abb2;
+  }
+  &.is-active {
+    color: rgb(96, 56, 17);
+    background-color: #f5f7fa;
   }
 }
 </style>

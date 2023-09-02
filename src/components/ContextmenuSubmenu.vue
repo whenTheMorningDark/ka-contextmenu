@@ -11,7 +11,7 @@
 </template>
 <script setup lang="ts">
 import ContextItem from "./ContextItem.vue"
-import { ref } from "vue"
+import { ref, inject, Ref, watch } from "vue"
 interface Props {
   title: string
   disabled?: boolean
@@ -22,7 +22,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const isHover = ref(false)
-
+const isSubmenu = inject<Ref<boolean>>("isSubmenu", ref(ref(false)))
+watch(isSubmenu, (nVal) => {
+  isHover.value = nVal
+})
 const handleMouseenter = () => {
   if (props.disabled) {
     return

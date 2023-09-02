@@ -25,6 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const visible = ref(false)
 const fixed = ref(false)
+const isSubmenu = ref(false)
 
 const defaultSyleOverFlow = ref()
 const emit = defineEmits(["hide"])
@@ -57,6 +58,7 @@ const hide = () => {
   emit("hide", visible.value)
 }
 provide("hide", hide)
+provide("isSubmenu", isSubmenu)
 // 计算x,y的偏移值
 const calculatePosition = (axis: "X" | "Y", mousePos: number, elSize: number) => {
   const windowSize = axis === "X" ? window.innerWidth : window.innerHeight
@@ -77,8 +79,22 @@ useClickOutside(
   },
   { ignore: props.ignore }
 )
+
+const getNodeList = () => {
+  const el = contextmenuRef.value
+  const contextItemNodeList = el?.querySelectorAll(".context-item")
+  if (!contextItemNodeList || contextItemNodeList.length === 0) {
+    return []
+  }
+  return contextItemNodeList
+}
+
 // 定义一个公共函数，用于处理箭头按键
-const handleArrowKey = (contextItemNodeList: NodeListOf<Element>, isUp: boolean) => {
+const handleArrowKey = (isUp: boolean) => {
+  const contextItemNodeList = getNodeList()
+  if (contextItemNodeList.length === 0) {
+    return
+  }
   Array.from(contextItemNodeList).forEach((v) => {
     v.classList.remove("is-active")
   })
@@ -106,25 +122,35 @@ const handleArrowKey = (contextItemNodeList: NodeListOf<Element>, isUp: boolean)
   contextItemNodeList[activeIndex.value].classList.add("is-active")
 }
 
-const keydownHandler = function (e: KeyboardEvent) {
-  const el = contextmenuRef.value
-  const contextItemNodeList = el?.querySelectorAll(".context-item")
-  if (!contextItemNodeList || contextItemNodeList.length === 0) {
+const handlArrowRight = async () => {
+  const contextItemNodeList = getNodeList()
+  if (contextItemNodeList.length === 0) {
     return
   }
+  const element = contextItemNodeList[activeIndex.value]
+  if (!element) {
+    return
+  }
+  isSubmenu.value = element.classList.contains("context-sub-menu-item")
+  if (isSubmenu.value) {
+    await nextTick()
+    handleArrowKey(false)
+  }
+}
 
+const keydownHandler = function (e: KeyboardEvent) {
   switch (e.key) {
     case "ArrowUp":
-      handleArrowKey(contextItemNodeList, true)
+      handleArrowKey(true)
       break
     case "ArrowDown":
-      handleArrowKey(contextItemNodeList, false)
+      handleArrowKey(false)
       break
     case "ArrowLeft":
       console.log("Left arrow key pressed")
       break
     case "ArrowRight":
-      console.log("Right arrow key pressed")
+      handlArrowRight()
       break
     default:
       break

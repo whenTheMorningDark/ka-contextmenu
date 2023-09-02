@@ -13,3 +13,23 @@ export const IgnoreElement = (ignore: string[], event: MouseEvent) => {
     }
   })
 }
+
+export const siblingElem = (elem: Element | null): Element[] => {
+  const _nodes: Element[] = []
+  if (!elem) {
+    return _nodes
+  }
+  let _elem: Element | null = elem
+
+  while ((_elem = _elem.previousElementSibling)) {
+    _nodes.push(_elem)
+  }
+
+  _elem = elem
+
+  while ((_elem = _elem.nextElementSibling)) {
+    _nodes.push(_elem)
+  }
+
+  return _nodes
+}

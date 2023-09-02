@@ -13,6 +13,7 @@
 import { ref, computed, nextTick, watch, onMounted, provide, onBeforeMount } from "vue"
 const contextmenuRef = ref<HTMLDivElement | null>(null)
 import useClickOutside from "./UseClickOutSide"
+import { siblingElem } from "../utils/utils"
 interface Props {
   ignore?: string[]
   popperClass?: string
@@ -26,6 +27,9 @@ const props = withDefaults(defineProps<Props>(), {
 const visible = ref(false)
 const fixed = ref(false)
 const isSubmenu = ref(false)
+const currentSubMenuIndex = ref(-1)
+const currentItem = ref()
+const currentParent = ref<HTMLElement | Element | null>(null)
 
 const defaultSyleOverFlow = ref()
 const emit = defineEmits(["hide"])
@@ -55,6 +59,8 @@ watch(
 const hide = () => {
   visible.value = false
   activeIndex.value = -1
+  isSubmenu.value = false
+  currentParent.value = null
   emit("hide", visible.value)
 }
 provide("hide", hide)
@@ -81,7 +87,7 @@ useClickOutside(
 )
 
 const getNodeList = () => {
-  const el = contextmenuRef.value
+  const el = currentParent.value || contextmenuRef.value
   const contextItemNodeList = el?.querySelectorAll(".context-item")
   if (!contextItemNodeList || contextItemNodeList.length === 0) {
     return []
@@ -92,6 +98,7 @@ const getNodeList = () => {
 // 定义一个公共函数，用于处理箭头按键
 const handleArrowKey = (isUp: boolean) => {
   const contextItemNodeList = getNodeList()
+  console.log(contextItemNodeList, "contextItemNodeList")
   if (contextItemNodeList.length === 0) {
     return
   }
@@ -120,6 +127,7 @@ const handleArrowKey = (isUp: boolean) => {
   }
 
   contextItemNodeList[activeIndex.value].classList.add("is-active")
+  currentItem.value = contextItemNodeList[activeIndex.value]
 }
 
 const handlArrowRight = async () => {
@@ -127,14 +135,31 @@ const handlArrowRight = async () => {
   if (contextItemNodeList.length === 0) {
     return
   }
-  const element = contextItemNodeList[activeIndex.value]
-  if (!element) {
+  if (!currentItem.value) {
     return
   }
-  isSubmenu.value = element.classList.contains("context-sub-menu-item")
+  if (!isSubmenu.value) {
+    const isHasSubMenuItem = currentItem.value.classList.contains("context-sub-menu-item")
+    if (isHasSubMenuItem) {
+      isSubmenu.value = isHasSubMenuItem
+      await nextTick()
+      currentSubMenuIndex.value = activeIndex.value
+      activeIndex.value = -1
+      console.log(siblingElem(currentItem.value), "ww")
+      const siblingElement = siblingElem(currentItem.value)
+      if (siblingElement.length > 0) {
+        currentParent.value = siblingElement[0]
+        handleArrowKey(false)
+      }
+    }
+  }
+}
+
+const handlArrowLeft = () => {
   if (isSubmenu.value) {
-    await nextTick()
-    handleArrowKey(false)
+    currentParent.value = null
+    activeIndex.value = currentSubMenuIndex.value
+    isSubmenu.value = false
   }
 }
 
@@ -147,7 +172,7 @@ const keydownHandler = function (e: KeyboardEvent) {
       handleArrowKey(false)
       break
     case "ArrowLeft":
-      console.log("Left arrow key pressed")
+      handlArrowLeft()
       break
     case "ArrowRight":
       handlArrowRight()

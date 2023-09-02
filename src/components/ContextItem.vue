@@ -6,6 +6,7 @@
     @mouseenter="handleMouseenter"
     @mouseleave="handleMouseleave"
     ref="contextItemRef"
+    :id="uuidv4()"
   >
     <slot />
   </div>
@@ -14,6 +15,7 @@
 <script lang="ts" setup>
 import { computed, ref, inject } from "vue"
 import { IgnoreElement } from "../utils/utils"
+import { v4 as uuidv4 } from "uuid"
 const contextItemRef = ref()
 const currentClass = ref()
 interface Props {

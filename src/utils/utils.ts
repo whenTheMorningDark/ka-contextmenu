@@ -33,3 +33,19 @@ export const siblingElem = (elem: Element | null): Element[] => {
 
   return _nodes
 }
+
+export const findParentWithLimit = (element: HTMLElement | null, maxSearchDepth: number): HTMLElement | null => {
+  if (!element || maxSearchDepth <= -1) {
+    return null
+  }
+
+  let parentElement = element.parentElement
+  let searchDepth = 1
+
+  while (parentElement && searchDepth <= maxSearchDepth) {
+    parentElement = parentElement.parentElement
+    searchDepth++
+  }
+
+  return parentElement
+}

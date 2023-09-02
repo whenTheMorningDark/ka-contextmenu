@@ -13,7 +13,7 @@
 import { ref, computed, nextTick, watch, onMounted, provide, onBeforeMount } from "vue"
 const contextmenuRef = ref<HTMLDivElement | null>(null)
 import useClickOutside from "./UseClickOutSide"
-import { siblingElem } from "../utils/utils"
+import { siblingElem, findParentWithLimit } from "../utils/utils"
 interface Props {
   ignore?: string[]
   popperClass?: string
@@ -98,7 +98,6 @@ const getNodeList = () => {
 // 定义一个公共函数，用于处理箭头按键
 const handleArrowKey = (isUp: boolean) => {
   const contextItemNodeList = getNodeList()
-  console.log(contextItemNodeList, "contextItemNodeList")
   if (contextItemNodeList.length === 0) {
     return
   }
@@ -145,7 +144,6 @@ const handlArrowRight = async () => {
       await nextTick()
       currentSubMenuIndex.value = activeIndex.value
       activeIndex.value = -1
-      console.log(siblingElem(currentItem.value), "ww")
       const siblingElement = siblingElem(currentItem.value)
       if (siblingElement.length > 0) {
         currentParent.value = siblingElement[0]
@@ -157,8 +155,16 @@ const handlArrowRight = async () => {
 
 const handlArrowLeft = () => {
   if (isSubmenu.value) {
-    currentParent.value = null
-    activeIndex.value = currentSubMenuIndex.value
+    const nearstParent = findParentWithLimit(currentItem.value, 0)
+    currentParent.value = findParentWithLimit(currentItem.value, 2)
+    const nearstItem = siblingElem(nearstParent)[0]
+    const contextItemNodeList = currentParent.value?.querySelectorAll(".context-item")
+    if (!contextItemNodeList) {
+      return
+    }
+    const index = Array.from(contextItemNodeList).findIndex((v) => v === nearstItem)
+    currentItem.value = nearstItem
+    activeIndex.value = index
     isSubmenu.value = false
   }
 }

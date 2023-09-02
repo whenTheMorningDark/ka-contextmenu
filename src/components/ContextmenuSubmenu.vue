@@ -1,5 +1,5 @@
 <template>
-  <div class="ka-contextmenu-submenu" @mouseenter="handleMouseenter" @mouseleave="handleMouseleave">
+  <div class="ka-contextmenu-submenu" @mouseenter="handleMouseenter" @mouseleave="handleMouseleave" :id="uuidv4()">
     <ContextItem class="context-sub-menu-item">
       <span>{{ title }}</span>
       <span class="iconfont icon-rightarrow submenu-right-icon" />
@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import ContextItem from "./ContextItem.vue"
 import { ref, inject, Ref, watch } from "vue"
+import { v4 as uuidv4 } from "uuid"
 interface Props {
   title: string
   disabled?: boolean

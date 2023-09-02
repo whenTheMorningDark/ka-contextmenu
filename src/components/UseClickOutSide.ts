@@ -1,4 +1,5 @@
 import { onMounted, onBeforeUnmount, Ref } from "vue"
+import { IgnoreElement } from "../utils/utils"
 interface Options {
   ignore?: string[]
 }
@@ -8,15 +9,6 @@ function useClickOutside(
   options?: Options
 ): void {
   let isIgnore = true
-  const IgnoreElement = (ignore: string[], event: MouseEvent) => {
-    return ignore.some((target) => {
-      if (typeof target === "string") {
-        return Array.from(window.document.querySelectorAll(target)).some(
-          (el) => el === event.target || event.composedPath().includes(el)
-        )
-      }
-    })
-  }
   const clickOutsideHandler = (event: MouseEvent) => {
     const el = elementRef.value
     if (!el || el === event.target || event.composedPath().includes(el)) {

@@ -13,6 +13,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, inject } from "vue"
+import { IgnoreElement } from "../utils/utils"
 const contextItemRef = ref()
 const currentClass = ref()
 interface Props {
@@ -42,12 +43,17 @@ const handleClick = (e: MouseEvent) => {
   if (props.disabled) {
     return
   }
+  const isHasIngoreParent = IgnoreElement([".context-sub-menu-item"], e)
+
+  if (isHasIngoreParent) {
+    return
+  }
   emit("click", e)
   props.hideOnClick && menuHide?.()
 }
 
 const handleMouseenter = (e: MouseEvent) => {
-  if (props.disabled) return
+  if (props.disabled || !contextItemRef.value) return
   currentClass.value = contextItemRef.value.classList
   isHover.value = true
   emit("mouseenter", e)

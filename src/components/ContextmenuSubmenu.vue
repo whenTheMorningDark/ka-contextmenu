@@ -1,20 +1,41 @@
 <template>
-  <div class="ka-contextmenu-submenu">
-    <ContextItem>
+  <div class="ka-contextmenu-submenu" @mouseenter="handleMouseenter" @mouseleave="handleMouseleave">
+    <ContextItem class="context-sub-menu-item">
       <span>{{ title }}</span>
       <span class="iconfont icon-rightarrow submenu-right-icon" />
     </ContextItem>
-    <div class="context-submenu-wrapper">
+    <div class="context-submenu-wrapper" v-if="isHover">
       <slot />
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import ContextItem from "./ContextItem.vue"
+import { ref } from "vue"
 interface Props {
   title: string
+  disabled?: boolean
 }
-defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  title: "",
+  disabled: false
+})
+
+const isHover = ref(false)
+
+const handleMouseenter = () => {
+  if (props.disabled) {
+    return
+  }
+  isHover.value = true
+}
+
+const handleMouseleave = () => {
+  if (props.disabled) {
+    return
+  }
+  isHover.value = true
+}
 </script>
 <style lang="scss" scoped>
 @import "../icon/iconfont.css";

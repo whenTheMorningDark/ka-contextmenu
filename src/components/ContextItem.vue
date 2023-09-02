@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, inject, onMounted } from "vue"
+import { computed, ref, inject } from "vue"
 const contextItemRef = ref()
 const currentClass = ref()
 interface Props {
@@ -58,7 +58,6 @@ const handleMouseleave = (e: MouseEvent) => {
   isHover.value = false
   emit("mouseleave", e)
 }
-onMounted(() => {})
 </script>
 
 <style lang="scss">
@@ -77,6 +76,9 @@ onMounted(() => {})
   &.is-hover {
     background-color: rgb(96, 56, 17);
     color: #fff;
+    .iconfont {
+      color: #fff;
+    }
   }
   &.is-disabled {
     cursor: not-allowed;
@@ -85,6 +87,9 @@ onMounted(() => {})
   &.is-active {
     color: rgb(96, 56, 17);
     background-color: #f5f7fa;
+    .iconfont {
+      color: rgb(96, 56, 17);
+    }
   }
 }
 </style>

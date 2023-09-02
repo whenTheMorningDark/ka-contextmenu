@@ -197,6 +197,7 @@ defineExpose({
   line-height: 20px;
   min-width: 10px;
   word-wrap: break-word;
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
 }
 .fade-enter-active,
 .fade-leave-active {

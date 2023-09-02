@@ -5,12 +5,17 @@
     <ContentItem class="myItem">取消组合</ContentItem>
     <ContentItem disabled>分层</ContentItem>
     <ContentItem>取消分层取消分层</ContentItem>
+    <ContextmenuSubmenu title="多层列表">
+      <ContentItem>我是内部的子组件</ContentItem>
+      <ContentItem>子组件</ContentItem>
+    </ContextmenuSubmenu>
   </ContextMenu>
 </template>
 <script setup lang="ts">
 import { ref } from "vue"
 import ContextMenu from "./components/ContextMenu.vue"
 import ContentItem from "./components/ContextItem.vue"
+import ContextmenuSubmenu from "./components/ContextmenuSubmenu.vue"
 const contextmenuRef = ref()
 const contextmenu = (e: MouseEvent) => {
   console.log("www")

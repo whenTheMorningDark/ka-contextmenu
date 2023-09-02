@@ -1,0 +1,17 @@
+@font-face {
+  font-family: "ka-menu-icon"; /* Project id  */
+  src: url('iconfont.ttf?t=1693632454203') format('truetype');
+}
+
+.iconfont {
+  font-family: "ka-menu-icon" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-rightarrow:before {
+  content: "\e622";
+}
+
